@@ -121,6 +121,18 @@ class DatabaseHelper {
     );
   }
 
+  // Metode untuk memeriksa apakah resep sudah ada di daftar favorit
+  Future<bool> isFavorite(int recipeId) async {
+    final db =
+        await database; // Pastikan database sudah didefinisikan dengan benar
+    final result = await db.query(
+      'favorites', // Nama tabel tempat resep favorit disimpan
+      where: 'id = ?',
+      whereArgs: [recipeId],
+    );
+    return result.isNotEmpty;
+  }
+
   // Ambil semua resep favorit
   Future<List<Map<String, dynamic>>> getFavorites() async {
     final db = await instance.database;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../services/db_service.dart';
+import '../screens/recipe_detail_screen.dart';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({Key? key}) : super(key: key);
@@ -29,6 +29,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     _loadFavorites();
   }
 
+  void _openRecipeDetails(int recipeId, String recipeTitle) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RecipeDetailScreen(
+          recipeId: recipeId,
+          recipeTitle: recipeTitle,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,13 +59,22 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             itemCount: items.length,
             itemBuilder: (context, index) {
               final item = items[index];
-              return ListTile(
-                leading: Image.network(item['image'],
-                    width: 50, height: 50, fit: BoxFit.cover),
-                title: Text(item['title']),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _deleteFavorite(item['id']),
+              return GestureDetector(
+                onTap: () {
+                  _openRecipeDetails(item['id'], item['title']);
+                },
+                child: Card(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  child: ListTile(
+                    leading: Image.network(item['image'],
+                        width: 50, height: 50, fit: BoxFit.cover),
+                    title: Text(item['title']),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => _deleteFavorite(item['id']),
+                    ),
+                  ),
                 ),
               );
             },

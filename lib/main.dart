@@ -1,28 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'providers/recipe_provider.dart';
-import 'screens/home_screen.dart';
+import 'screens/welcome_screen.dart'; // Import WelcomeScreen
 
 void main() {
-  runApp(const MyApp());
+  runApp(const CookSmartApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class CookSmartApp extends StatelessWidget {
+  const CookSmartApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => RecipeProvider()),
-      ],
-      child: MaterialApp(
-        title: 'CookSmart',
-        theme: ThemeData(
-          primarySwatch: Colors.green,
-        ),
-        home: HomeScreen(),
+    return MaterialApp(
+      title: 'CookSmart',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.orange,
       ),
+      home: const WelcomeScreen(), // Set WelcomeScreen sebagai halaman awal
     );
   }
 }

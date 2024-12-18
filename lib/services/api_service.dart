@@ -5,10 +5,16 @@ class ApiService {
   final String apiKey = '27aec1d7480f4b78818f2b1126c561cb';
   final String baseUrl = 'https://api.spoonacular.com';
 
-  // Fetch recipes by ingredients
-  Future<List<dynamic>> fetchRecipesByIngredients(String ingredients) async {
-    final url =
+  // Fetch recipes by ingredients with optional diet filter
+  Future<List<dynamic>> fetchRecipesByIngredients(String ingredients,
+      {String? diet}) async {
+    // Membuat URL untuk request dengan atau tanpa filter diet
+    String url =
         '$baseUrl/recipes/findByIngredients?ingredients=$ingredients&number=10&apiKey=$apiKey';
+
+    if (diet != null && diet.isNotEmpty) {
+      url += '&diet=$diet'; // Menambahkan filter diet ke URL
+    }
 
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
@@ -31,7 +37,7 @@ class ApiService {
     }
   }
 
-  // Tambahkan fetchRecipeDetailsFromUrl jika diperlukan
+  // Fetch recipe details from URL (optional)
   Future<Map<String, dynamic>> fetchRecipeDetailsFromUrl(String url) async {
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
