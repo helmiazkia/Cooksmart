@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green, // Warna latar belakang AppBar
+        backgroundColor: Colors.green, // Warna kuning AppBar
         elevation: 0, // Menghilangkan bayangan
         centerTitle: true, // Teks di tengah
         title: const Text(
@@ -47,31 +47,33 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: Container(
-        color: const Color(0xFFF6F9F6), // Warna background layar
+        color: const Color(0xFFFFF8E1), // Latar belakang kuning lembut
         child: _screens[_selectedIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        selectedItemColor: Colors.green, // Warna ikon aktif
-        unselectedItemColor: Colors.grey, // Warna ikon non-aktif
+        selectedItemColor: Colors.green, // Warna kuning ikon aktif
+        unselectedItemColor: Colors.grey.shade600, // Warna ikon non-aktif
         backgroundColor: Colors.white,
+        type: BottomNavigationBarType.fixed,
+        elevation: 8, // Tambahkan bayangan
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            label: 'Pencarian',
+            label: 'Search',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
-            label: 'Rencana Makan',
+            label: 'Meal Plan',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart),
-            label: 'Daftar Belanja',
+            label: 'Shopping List',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
-            label: 'Favorit',
+            label: 'Favorites',
           ),
         ],
       ),

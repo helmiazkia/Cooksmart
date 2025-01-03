@@ -14,7 +14,7 @@ class CookSmartApp extends StatelessWidget {
       title: 'CookSmart',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.orange,
+        primarySwatch: Colors.green,
       ),
       home: const WelcomeScreen(), // Set WelcomeScreen sebagai halaman awal
     );

@@ -23,7 +23,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
   final ApiService _apiService = ApiService();
   Map<String, dynamic>? recipeDetails;
   bool isLoading = true;
-  bool isFavorite = false; // Menambahkan status favorit
+  bool isFavorite = false;
 
   @override
   void initState() {
@@ -47,7 +47,6 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     }
   }
 
-  // Fungsi untuk memeriksa status favorit
   Future<void> checkIfFavorite() async {
     final isFav = await DatabaseHelper.instance.isFavorite(widget.recipeId);
     setState(() {
@@ -91,7 +90,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     for (var ingredient in ingredients) {
       final item = ShoppingItem(
         name: ingredient['original'],
-        quantity: 1, // Bisa disesuaikan
+        quantity: 1,
         unit: ingredient['unit'] ?? 'pcs',
       );
       await DatabaseHelper.instance.addShoppingItem(item);
@@ -106,13 +105,23 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 121, 241, 125),
       appBar: AppBar(
-        title: Text(widget.recipeTitle),
+        backgroundColor: Colors.green,
+        title: Text(
+          widget.recipeTitle,
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white, // Warna kuning
+          ),
+        ),
         actions: [
           IconButton(
             icon: Icon(
               isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: isFavorite ? Colors.red : Colors.white,
+              color:
+                  isFavorite ? Colors.red : const Color.fromARGB(255, 27, 9, 9),
             ),
             onPressed: isFavorite ? removeFromFavorites : addToFavorites,
           ),
@@ -127,23 +136,33 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   child: ListView(
                     children: [
                       Card(
+                        color: Colors.green,
                         elevation: 4,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Image.network(
-                              recipeDetails!['image'],
-                              height: 200,
-                              fit: BoxFit.cover,
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                recipeDetails!['image'],
+                                height: 200,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                            const SizedBox(height: 16),
-                            Text(
-                              recipeDetails!['title'],
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(
+                                recipeDetails!['title'],
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ],
@@ -151,34 +170,43 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                       ),
                       const SizedBox(height: 16),
                       Card(
+                        color: Colors.green,
                         elevation: 4,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Bahan-Bahan: ',
+                                'Bahan-Bahan:',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
                               ),
+                              const SizedBox(height: 8),
                               ...recipeDetails!['extendedIngredients']
                                   .map<Widget>((ingredient) {
                                 return ListTile(
+                                  contentPadding: EdgeInsets.zero,
                                   title: Row(
                                     children: [
                                       Expanded(
-                                        child: Text(ingredient['original']),
+                                        child: Text(
+                                          ingredient['original'],
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
-                                      // Menambahkan jumlah bahan
                                       Text(
                                         '${ingredient['amount']} ${ingredient['unit'] ?? ''}',
-                                        style: TextStyle(
+                                        style: const TextStyle(
+                                          color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -198,24 +226,30 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                       ),
                       const SizedBox(height: 16),
                       Card(
+                        color: Colors.green,
                         elevation: 4,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Langkah Memasak: ',
+                                'Langkah Memasak:',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
                               ),
+                              const SizedBox(height: 8),
                               recipeDetails!['analyzedInstructions'].isEmpty
-                                  ? const Text('Tidak ada langkah memasak.')
+                                  ? const Text(
+                                      'Tidak ada langkah memasak.',
+                                      style: TextStyle(color: Colors.white),
+                                    )
                                   : Column(
                                       children:
                                           recipeDetails!['analyzedInstructions']
@@ -223,9 +257,21 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                                               .map<Widget>((step) => ListTile(
                                                     leading: CircleAvatar(
                                                       child: Text(
-                                                          '${step['number']}'),
+                                                        '${step['number']}',
+                                                        style: const TextStyle(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    10,
+                                                                    32,
+                                                                    229)),
+                                                      ),
                                                     ),
-                                                    title: Text(step['step']),
+                                                    title: Text(
+                                                      step['step'],
+                                                      style: const TextStyle(
+                                                          color: Colors.white),
+                                                    ),
                                                   ))
                                               .toList(),
                                     ),
@@ -235,24 +281,28 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                       ),
                       const SizedBox(height: 16),
                       Card(
+                        color: Colors.green,
                         elevation: 4,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Informasi Nutrisi: ',
+                                'Informasi Nutrisi:',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
                               ),
+                              const SizedBox(height: 8),
                               Text(
                                 'Kalori: ${recipeDetails!['nutrition']['nutrients'][0]['amount']} kkal',
+                                style: const TextStyle(color: Colors.white),
                               ),
                               const SizedBox(height: 8),
                               ElevatedButton(

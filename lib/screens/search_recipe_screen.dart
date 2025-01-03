@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cooksmart/screens/recipe_detail_screen.dart'; // Import layar detail resep
+import 'package:cooksmart/screens/recipe_detail_screen.dart';
 import '../services/api_service.dart';
 
 class SearchRecipeScreen extends StatefulWidget {
@@ -13,11 +13,11 @@ class _SearchRecipeScreenState extends State<SearchRecipeScreen> {
   final ApiService _apiService = ApiService();
   List<dynamic> _recipes = [];
   bool isLoading = false;
-  String selectedDiet = ''; // Variabel untuk menyimpan pilihan diet
+  String selectedDiet = '';
+  String ingredients = '';
 
-  // Daftar pilihan diet yang tersedia
-  List<String> dietOptions = [
-    'Semua Diet',
+  final List<String> dietOptions = [
+    'All Diets',
     'Keto',
     'Vegan',
     'Vegetarian',
@@ -30,20 +30,33 @@ class _SearchRecipeScreenState extends State<SearchRecipeScreen> {
     'Whole 30',
   ];
 
-  void _fetchRecipes(String ingredients) async {
+  void _fetchRecipes() async {
+    if (ingredients.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content:
+                Text('Please enter ingredients before searching for recipes!')),
+      );
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
 
     try {
-      final recipes = await _apiService.fetchRecipesByIngredients(ingredients,
-          diet: selectedDiet);
+      final recipes = await _apiService.fetchRecipesByIngredients(
+        ingredients,
+        diet: selectedDiet == 'All Diets' ? '' : selectedDiet,
+      );
       setState(() {
         _recipes = recipes;
-        isLoading = false;
       });
     } catch (e) {
-      print('Error fetching recipes: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
+    } finally {
       setState(() {
         isLoading = false;
       });
@@ -53,81 +66,134 @@ class _SearchRecipeScreenState extends State<SearchRecipeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pencarian Resep')),
+      appBar: AppBar(
+        title: const Text('Recipe Search'),
+        centerTitle: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Dropdown untuk memilih preferensi diet
-            DropdownButton<String>(
-              value: selectedDiet.isEmpty ? null : selectedDiet,
-              hint: const Text('Pilih Diet'),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedDiet = newValue ?? '';
-                });
-              },
-              items: dietOptions.map((String diet) {
-                return DropdownMenuItem<String>(
-                  value: diet,
-                  child: Text(diet),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16),
-            // TextField untuk memasukkan bahan
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Masukkan bahan (misalnya: tomat, ayam)',
-                border: OutlineInputBorder(),
+            Material(
+              elevation: 2,
+              borderRadius: BorderRadius.circular(10),
+              child: DropdownButtonFormField<String>(
+                value: selectedDiet.isEmpty ? null : selectedDiet,
+                decoration: InputDecoration(
+                  labelText: 'Select Diet Preference',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedDiet = newValue ?? '';
+                  });
+                },
+                items: dietOptions.map((String diet) {
+                  return DropdownMenuItem<String>(
+                    value: diet,
+                    child: Text(diet),
+                  );
+                }).toList(),
               ),
-              onChanged: (text) {
-                // Update ketika bahan diubah
-              },
             ),
             const SizedBox(height: 16),
-            // Tombol untuk mencari resep
-            ElevatedButton(
-              onPressed: () {
-                String ingredients =
-                    'tomato, chicken'; // Gantilah ini dengan input bahan dari pengguna
-                _fetchRecipes(ingredients);
-              },
-              child: const Text('Cari Resep'),
+            Material(
+              elevation: 2,
+              borderRadius: BorderRadius.circular(10),
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: 'Enter ingredients (e.g., tomato, chicken)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                ),
+                onChanged: (text) {
+                  ingredients = text;
+                },
+              ),
             ),
             const SizedBox(height: 16),
-            // Menampilkan indikator loading atau resep
-            isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : Expanded(
-                    child: ListView.builder(
-                      itemCount: _recipes.length,
-                      itemBuilder: (context, index) {
-                        final recipe = _recipes[index];
-                        return ListTile(
-                          title: Text(recipe['title']),
-                          leading: Image.network(
-                            recipe['image'],
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: _fetchRecipes,
+                child: const Text(
+                  'Search Recipes',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _recipes.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'No recipes found',
+                            style: TextStyle(fontSize: 16),
                           ),
-                          onTap: () {
-                            // Navigasi ke layar detail resep
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RecipeDetailScreen(
-                                  recipeId: recipe['id'],
-                                  recipeTitle: recipe['title'],
+                        )
+                      : ListView.builder(
+                          itemCount: _recipes.length,
+                          itemBuilder: (context, index) {
+                            final recipe = _recipes[index];
+                            return Card(
+                              margin: const EdgeInsets.symmetric(
+                                vertical: 8,
+                                horizontal: 4,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.all(12),
+                                title: Text(
+                                  recipe['title'],
+                                  style: const TextStyle(fontSize: 16),
                                 ),
+                                leading: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: recipe['image'] != null
+                                      ? Image.network(
+                                          recipe['image'],
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : const Icon(
+                                          Icons.image_not_supported,
+                                          size: 50,
+                                        ),
+                                ),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => RecipeDetailScreen(
+                                        recipeId: recipe['id'],
+                                        recipeTitle: recipe['title'],
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             );
                           },
-                        );
-                      },
-                    ),
-                  ),
+                        ),
+            ),
           ],
         ),
       ),

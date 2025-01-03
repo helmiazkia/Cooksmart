@@ -24,13 +24,19 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     setState(() {
       shoppingList = DatabaseHelper.instance.getShoppingList();
     });
+
+    // Feedback visual
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('$name added to the shopping list')),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Daftar Belanja'),
+        title: const Text('Shopping List'),
+        centerTitle: true,
       ),
       body: FutureBuilder<List<ShoppingItem>>(
         future: shoppingList,
@@ -38,28 +44,48 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(child: Text('Terjadi kesalahan'));
+            return const Center(child: Text('An error occurred'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Daftar belanja kosong'));
+            return const Center(
+              child: Text(
+                'Your shopping list is empty.\nTap "+" to add items.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+            );
           } else {
             final items = snapshot.data!;
             return ListView.builder(
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
-                return ListTile(
-                  title: Text(item.name),
-                  subtitle: Text('Jumlah: ${item.quantity} ${item.unit}'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () async {
-                      await DatabaseHelper.instance
-                          .deleteShoppingItem(item.id!);
-                      setState(() {
-                        shoppingList =
-                            DatabaseHelper.instance.getShoppingList();
-                      });
-                    },
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  margin: const EdgeInsets.all(8),
+                  child: ListTile(
+                    title:
+                        Text(item.name, style: const TextStyle(fontSize: 16)),
+                    subtitle: Text('Quantity: ${item.quantity} ${item.unit}'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () async {
+                        await DatabaseHelper.instance
+                            .deleteShoppingItem(item.id!);
+                        setState(() {
+                          shoppingList =
+                              DatabaseHelper.instance.getShoppingList();
+                        });
+
+                        // Feedback visual
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(
+                                  '${item.name} removed from the shopping list')),
+                        );
+                      },
+                    ),
                   ),
                 );
               },
@@ -69,7 +95,6 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Menambahkan bahan ke daftar belanja
           _showAddItemDialog(context);
         },
         child: const Icon(Icons.add),
@@ -78,6 +103,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   }
 
   void _showAddItemDialog(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
     final nameController = TextEditingController();
     final quantityController = TextEditingController();
     final unitController = TextEditingController();
@@ -86,43 +112,90 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Tambah Bahan ke Daftar Belanja'),
-          content: Column(
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Nama Bahan'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text('Add Item to Shopping List'),
+          content: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Item Name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter an item name';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: quantityController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Quantity',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null ||
+                          value.trim().isEmpty ||
+                          int.tryParse(value) == null) {
+                        return 'Please enter a valid quantity';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: unitController,
+                    decoration: InputDecoration(
+                      labelText: 'Unit (e.g., kg, pcs)',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter a unit';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
               ),
-              TextField(
-                controller: quantityController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Jumlah'),
-              ),
-              TextField(
-                controller: unitController,
-                decoration: const InputDecoration(labelText: 'Satuan'),
-              ),
-            ],
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Batal'),
+              child: const Text('Cancel'),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
-                final name = nameController.text;
-                final quantity = int.tryParse(quantityController.text) ?? 1;
-                final unit = unitController.text;
+                if (_formKey.currentState!.validate()) {
+                  final name = nameController.text.trim();
+                  final quantity =
+                      int.tryParse(quantityController.text.trim()) ?? 1;
+                  final unit = unitController.text.trim();
 
-                if (name.isNotEmpty && unit.isNotEmpty) {
                   _addItemToShoppingList(name, quantity, unit);
                   Navigator.of(context).pop();
                 }
               },
-              child: const Text('Tambah'),
+              child: const Text('Add'),
             ),
           ],
         );
