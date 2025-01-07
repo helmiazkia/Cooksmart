@@ -48,40 +48,67 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rencana Makan'),
-      ),
-      body: FutureBuilder<List<MealPlan>>(
-        future: _mealPlans,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final mealPlans = snapshot.data!;
-          return ListView.builder(
-            itemCount: mealPlans.length,
-            itemBuilder: (context, index) {
-              final mealPlan = mealPlans[index];
-              return ListTile(
-                title: Text(
-                    '${mealPlan.day} - ${mealPlan.mealType} - ${mealPlan.recipeTitle}'),
-                subtitle: Text('Kalori: ${mealPlan.calories}'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () async {
-                    await DatabaseHelper.instance.deleteMealPlan(mealPlan.id!);
-                    _loadMealPlans();
-                  },
-                ),
-              );
-            },
-          );
-        },
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 83, 227, 88),
+              Color.fromARGB(255, 34, 139, 34),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        padding: const EdgeInsets.all(16.0),
+        child: FutureBuilder<List<MealPlan>>(
+          future: _mealPlans,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final mealPlans = snapshot.data!;
+            return ListView.builder(
+              itemCount: mealPlans.length,
+              itemBuilder: (context, index) {
+                final mealPlan = mealPlans[index];
+                return Card(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  elevation: 4,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(12),
+                    title: Text(
+                      '${mealPlan.day} - ${mealPlan.mealType} - ${mealPlan.recipeTitle}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    subtitle: Text('Kalori: ${mealPlan.calories}'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () async {
+                        await DatabaseHelper.instance
+                            .deleteMealPlan(mealPlan.id!);
+                        _loadMealPlans();
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _showAddMealPlanDialog(context);
         },
+        backgroundColor:
+            const Color.fromARGB(255, 83, 227, 88), // Warna hijau untuk FAB
         child: const Icon(Icons.add),
       ),
     );
@@ -92,48 +119,99 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Tambah Rencana Makan'),
-          content: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                DropdownButtonFormField<String>(
-                  value: _day,
-                  items: [
-                    'Senin',
-                    'Selasa',
-                    'Rabu',
-                    'Kamis',
-                    'Jumat',
-                    'Sabtu',
-                    'Minggu'
-                  ]
-                      .map((day) =>
-                          DropdownMenuItem(value: day, child: Text(day)))
-                      .toList(),
-                  onChanged: (value) => _day = value!,
-                  decoration: const InputDecoration(labelText: 'Hari'),
-                ),
-                DropdownButtonFormField<String>(
-                  value: _mealType,
-                  items: ['Sarapan', 'Makan Siang', 'Makan Malam']
-                      .map((type) =>
-                          DropdownMenuItem(value: type, child: Text(type)))
-                      .toList(),
-                  onChanged: (value) => _mealType = value!,
-                  decoration: const InputDecoration(labelText: 'Tipe Makanan'),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Judul Resep'),
-                  onSaved: (value) => _recipeTitle = value!,
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Kalori'),
-                  keyboardType: TextInputType.number,
-                  onSaved: (value) => _calories = int.parse(value!),
-                ),
-              ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: const Text(
+            'Tambah Rencana Makan',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<String>(
+                    value: _day,
+                    items: [
+                      'Senin',
+                      'Selasa',
+                      'Rabu',
+                      'Kamis',
+                      'Jumat',
+                      'Sabtu',
+                      'Minggu'
+                    ]
+                        .map((day) =>
+                            DropdownMenuItem(value: day, child: Text(day)))
+                        .toList(),
+                    onChanged: (value) => _day = value!,
+                    decoration: const InputDecoration(
+                      labelText: 'Hari',
+                      labelStyle: TextStyle(
+                        fontWeight: FontWeight.bold, // Boldkan label
+                      ),
+                      filled: true,
+                      fillColor: Color.fromARGB(255, 245, 245, 245),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    value: _mealType,
+                    items: ['Sarapan', 'Makan Siang', 'Makan Malam']
+                        .map((type) =>
+                            DropdownMenuItem(value: type, child: Text(type)))
+                        .toList(),
+                    onChanged: (value) => _mealType = value!,
+                    decoration: const InputDecoration(
+                      labelText: 'Tipe Makanan',
+                      labelStyle: TextStyle(
+                        fontWeight: FontWeight.bold, // Boldkan label
+                      ),
+                      filled: true,
+                      fillColor: Color.fromARGB(255, 245, 245, 245),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Judul Resep',
+                      labelStyle: TextStyle(
+                        fontWeight: FontWeight.bold, // Boldkan label
+                      ),
+                      filled: true,
+                      fillColor: Color.fromARGB(255, 245, 245, 245),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                    ),
+                    onSaved: (value) => _recipeTitle = value!,
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Kalori',
+                      labelStyle: TextStyle(
+                        fontWeight: FontWeight.bold, // Boldkan label
+                      ),
+                      filled: true,
+                      fillColor: Color.fromARGB(255, 245, 245, 245),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                    onSaved: (value) => _calories = int.parse(value!),
+                  ),
+                ],
+              ),
             ),
           ),
           actions: [

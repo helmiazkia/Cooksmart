@@ -14,15 +14,24 @@ class NutritionInfoScreen extends StatelessWidget {
           'Informasi Nutrisi',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.green.shade700,
       ),
       body: Container(
-        color: const Color.fromARGB(255, 121, 241, 125),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 83, 227, 88), // Light green
+              Color.fromARGB(255, 34, 139, 34), // Dark green
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
             Card(
-              color: Colors.green,
+              color: Colors.green.shade600,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -39,7 +48,7 @@ class NutritionInfoScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Card(
-              color: Colors.green,
+              color: Colors.green.shade600,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -56,7 +65,7 @@ class NutritionInfoScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Card(
-              color: Colors.green,
+              color: Colors.green.shade600,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -73,7 +82,7 @@ class NutritionInfoScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Card(
-              color: Colors.green,
+              color: Colors.green.shade600,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -90,7 +99,7 @@ class NutritionInfoScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Card(
-              color: Colors.green,
+              color: Colors.green.shade600,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

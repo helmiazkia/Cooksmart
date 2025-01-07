@@ -105,23 +105,23 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 121, 241, 125),
+      backgroundColor: const Color.fromARGB(
+          255, 93, 193, 93), // Lighter green for the background
       appBar: AppBar(
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.green.shade700, // Darker green for the app bar
         title: Text(
           widget.recipeTitle,
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.white, // Warna kuning
+            color: Colors.white,
           ),
         ),
         actions: [
           IconButton(
             icon: Icon(
               isFavorite ? Icons.favorite : Icons.favorite_border,
-              color:
-                  isFavorite ? Colors.red : const Color.fromARGB(255, 27, 9, 9),
+              color: isFavorite ? Colors.red : Colors.white,
             ),
             onPressed: isFavorite ? removeFromFavorites : addToFavorites,
           ),
@@ -136,7 +136,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   child: ListView(
                     children: [
                       Card(
-                        color: Colors.green,
+                        color: Colors
+                            .green.shade600, // Green card for the recipe image
                         elevation: 4,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -170,7 +171,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                       ),
                       const SizedBox(height: 16),
                       Card(
-                        color: Colors.green,
+                        color: Colors.green.shade600, // Consistent green color
                         elevation: 4,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -226,7 +227,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                       ),
                       const SizedBox(height: 16),
                       Card(
-                        color: Colors.green,
+                        color: Colors.green.shade600, // Consistent green color
                         elevation: 4,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -281,7 +282,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                       ),
                       const SizedBox(height: 16),
                       Card(
-                        color: Colors.green,
+                        color: Colors.green.shade600, // Consistent green color
                         elevation: 4,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),

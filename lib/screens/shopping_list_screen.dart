@@ -27,76 +27,97 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
     // Feedback visual
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$name added to the shopping list')),
+      SnackBar(
+        content: Text('$name added to the shopping list'),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.green,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Shopping List'),
-        centerTitle: true,
-      ),
-      body: FutureBuilder<List<ShoppingItem>>(
-        future: shoppingList,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return const Center(child: Text('An error occurred'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text(
-                'Your shopping list is empty.\nTap "+" to add items.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
-              ),
-            );
-          } else {
-            final items = snapshot.data!;
-            return ListView.builder(
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final item = items[index];
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  margin: const EdgeInsets.all(8),
-                  child: ListTile(
-                    title:
-                        Text(item.name, style: const TextStyle(fontSize: 16)),
-                    subtitle: Text('Quantity: ${item.quantity} ${item.unit}'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
-                        await DatabaseHelper.instance
-                            .deleteShoppingItem(item.id!);
-                        setState(() {
-                          shoppingList =
-                              DatabaseHelper.instance.getShoppingList();
-                        });
-
-                        // Feedback visual
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text(
-                                  '${item.name} removed from the shopping list')),
-                        );
-                      },
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 83, 227, 88),
+              Color.fromARGB(255, 34, 139, 34),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        padding: const EdgeInsets.all(16.0),
+        child: FutureBuilder<List<ShoppingItem>>(
+          future: shoppingList,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Center(child: Text('An error occurred'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(
+                child: Text(
+                  'Your shopping list is empty.\nTap "+" to add items.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+              );
+            } else {
+              final items = snapshot.data!;
+              return ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
                     ),
-                  ),
-                );
-              },
-            );
-          }
-        },
+                    elevation: 5,
+                    margin: const EdgeInsets.all(8),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(12),
+                      title: Text(
+                        item.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text('Quantity: ${item.quantity} ${item.unit}'),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () async {
+                          await DatabaseHelper.instance
+                              .deleteShoppingItem(item.id!);
+                          setState(() {
+                            shoppingList =
+                                DatabaseHelper.instance.getShoppingList();
+                          });
+
+                          // Feedback visual
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  '${item.name} removed from the shopping list'),
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _showAddItemDialog(context);
         },
+        backgroundColor: const Color.fromARGB(255, 83, 227, 88),
         child: const Icon(Icons.add),
       ),
     );
@@ -129,6 +150,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
+                      filled: true,
+                      fillColor: const Color.fromARGB(255, 236, 250, 236),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -146,6 +169,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
+                      filled: true,
+                      fillColor: const Color.fromARGB(255, 236, 250, 236),
                     ),
                     validator: (value) {
                       if (value == null ||
@@ -164,6 +189,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
+                      filled: true,
+                      fillColor: const Color.fromARGB(255, 236, 250, 236),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {

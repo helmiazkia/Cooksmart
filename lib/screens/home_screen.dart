@@ -3,7 +3,6 @@ import 'favorite_screen.dart';
 import 'meal_plan_screen.dart';
 import 'search_recipe_screen.dart';
 import 'shopping_list_screen.dart';
-import 'nutritional_info_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -20,7 +19,13 @@ class _HomeScreenState extends State<HomeScreen> {
     const MealPlanScreen(),
     const ShoppingListScreen(),
     const FavoritesScreen(),
-    const NutritionalInfoScreen(),
+  ];
+
+  final List<String> _titles = [
+    'Search Recipes',
+    'Meal Plan',
+    'Shopping List',
+    'Favorites',
   ];
 
   void _onItemTapped(int index) {
@@ -33,12 +38,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green, // Warna kuning AppBar
-        elevation: 0, // Menghilangkan bayangan
+        backgroundColor:
+            const Color.fromARGB(255, 3, 152, 8), // Warna hijau lembut
+        elevation: 4, // Tambahkan sedikit bayangan
         centerTitle: true, // Teks di tengah
-        title: const Text(
-          'CookSmart',
-          style: TextStyle(
+        title: Text(
+          _titles[_selectedIndex], // Judul berubah sesuai tab aktif
+          style: const TextStyle(
             color: Colors.white, // Warna teks putih
             fontSize: 24, // Ukuran font
             fontWeight: FontWeight.bold, // Bold teks
@@ -47,17 +53,30 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: Container(
-        color: const Color(0xFFFFF8E1), // Latar belakang kuning lembut
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFE8F5E9), // Hijau muda lembut
+              Color(0xFFFFF8E1), // Kuning lembut
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
         child: _screens[_selectedIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        selectedItemColor: Colors.green, // Warna kuning ikon aktif
+        selectedItemColor: const Color.fromARGB(255, 34, 139, 34), // Hijau tua
         unselectedItemColor: Colors.grey.shade600, // Warna ikon non-aktif
-        backgroundColor: Colors.white,
+        selectedLabelStyle:
+            const TextStyle(fontWeight: FontWeight.bold), // Bold label aktif
+        unselectedLabelStyle:
+            const TextStyle(fontWeight: FontWeight.normal), // Label non-aktif
+        backgroundColor: Colors.white, // Latar belakang putih
         type: BottomNavigationBarType.fixed,
-        elevation: 8, // Tambahkan bayangan
+        elevation: 12, // Tambahkan bayangan
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.search),

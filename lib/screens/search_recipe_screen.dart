@@ -34,8 +34,9 @@ class _SearchRecipeScreenState extends State<SearchRecipeScreen> {
     if (ingredients.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content:
-                Text('Please enter ingredients before searching for recipes!')),
+          content:
+              Text('Please enter ingredients before searching for recipes!'),
+        ),
       );
       return;
     }
@@ -66,26 +67,45 @@ class _SearchRecipeScreenState extends State<SearchRecipeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Recipe Search'),
-        centerTitle: true,
-      ),
-      body: Padding(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 83, 227, 88), // Hijau muda
+              Color.fromARGB(255, 34, 139, 34), // Hijau tua
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Material(
-              elevation: 2,
+              elevation: 4,
               borderRadius: BorderRadius.circular(10),
               child: DropdownButtonFormField<String>(
                 value: selectedDiet.isEmpty ? null : selectedDiet,
                 decoration: InputDecoration(
                   labelText: 'Select Diet Preference',
+                  labelStyle: const TextStyle(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
                   ),
                 ),
+                style: const TextStyle(
+                  color: Colors.black87,
+                  fontSize: 16,
+                ),
+                dropdownColor: Colors.white,
+                iconEnabledColor: Colors.green,
                 onChanged: (String? newValue) {
                   setState(() {
                     selectedDiet = newValue ?? '';
@@ -94,23 +114,31 @@ class _SearchRecipeScreenState extends State<SearchRecipeScreen> {
                 items: dietOptions.map((String diet) {
                   return DropdownMenuItem<String>(
                     value: diet,
-                    child: Text(diet),
+                    child: Text(
+                      diet,
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   );
                 }).toList(),
               ),
             ),
             const SizedBox(height: 16),
             Material(
-              elevation: 2,
+              elevation: 4,
               borderRadius: BorderRadius.circular(10),
               child: TextField(
                 decoration: InputDecoration(
                   labelText: 'Enter ingredients (e.g., tomato, chicken)',
+                  labelStyle: const TextStyle(color: Colors.black54),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   filled: true,
-                  fillColor: Colors.grey[100],
+                  fillColor: Colors.white,
                 ),
                 onChanged: (text) {
                   ingredients = text;
@@ -122,6 +150,7 @@ class _SearchRecipeScreenState extends State<SearchRecipeScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade700,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -130,7 +159,7 @@ class _SearchRecipeScreenState extends State<SearchRecipeScreen> {
                 onPressed: _fetchRecipes,
                 child: const Text(
                   'Search Recipes',
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
@@ -142,7 +171,7 @@ class _SearchRecipeScreenState extends State<SearchRecipeScreen> {
                       ? const Center(
                           child: Text(
                             'No recipes found',
-                            style: TextStyle(fontSize: 16),
+                            style: TextStyle(fontSize: 16, color: Colors.white),
                           ),
                         )
                       : ListView.builder(
@@ -157,6 +186,7 @@ class _SearchRecipeScreenState extends State<SearchRecipeScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
+                              elevation: 4,
                               child: ListTile(
                                 contentPadding: const EdgeInsets.all(12),
                                 title: Text(
