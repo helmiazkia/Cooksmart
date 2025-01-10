@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String apiKey = '27aec1d7480f4b78818f2b1126c561cb';
+  final String apiKey = '76cf5a869e424c24b0c13dbdc4d8e2d5';
   final String baseUrl = 'https://api.spoonacular.com';
 
   // Fetch recipes by ingredients with optional diet filter
