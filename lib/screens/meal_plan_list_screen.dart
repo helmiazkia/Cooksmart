@@ -21,9 +21,6 @@ class _MealPlanListScreenState extends State<MealPlanListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Daftar Rencana Makan'),
-      ),
       body: FutureBuilder<List<MealPlan>>(
         future: mealPlans,
         builder: (context, snapshot) {
@@ -42,7 +39,7 @@ class _MealPlanListScreenState extends State<MealPlanListScreen> {
                 return ListTile(
                   title: Text('${mealPlan.day} - ${mealPlan.mealType}'),
                   subtitle: Text(
-                      'Resep: ${mealPlan.recipeTitle}, Kalori: ${mealPlan.calories}'),
+                      'Resep: ${mealPlan.recipeTitle}, Kalori: ${mealPlan.calories} '),
                 );
               },
             );

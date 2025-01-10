@@ -26,7 +26,7 @@ class ApiService {
 
   // Fetch recipe details
   Future<Map<String, dynamic>> fetchRecipeDetails(int id) async {
-    final url =
+    final String url =
         '$baseUrl/recipes/$id/information?includeNutrition=true&apiKey=$apiKey';
 
     final response = await http.get(Uri.parse(url));
